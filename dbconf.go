@@ -7,11 +7,11 @@ import (
 	"github.com/kylelemons/go-gypsy/yaml"
 	"github.com/lib/pq"
 	"os"
-	"path/filepath"
 )
 
 // global options. available to any subcommands.
-var dbPath = flag.String("path", "db", "folder containing db info")
+var dbConfPath = flag.String("cfg", "db.yml", "path to a db configuration file")
+var dbMigrationsPath = flag.String("path", "db", "folder containing the migrations")
 var dbEnv = flag.String("env", "development", "which DB environment to use")
 
 // DBDriver encapsulates the info needed to work with
@@ -31,13 +31,11 @@ type DBConf struct {
 
 // default helper - makes a DBConf from the dbPath and dbEnv flags
 func NewDBConf() (*DBConf, error) {
-	return newDBConfDetails(*dbPath, *dbEnv)
+	return newDBConfDetails(*dbConfPath, *dbMigrationsPath, *dbEnv)
 }
 
 // extract configuration details from the given file
-func newDBConfDetails(p, env string) (*DBConf, error) {
-
-	cfgFile := filepath.Join(p, "dbconf.yml")
+func newDBConfDetails(cfgFile, migrationsDir, env string) (*DBConf, error) {
 
 	f, err := yaml.ReadFile(cfgFile)
 	if err != nil {
@@ -81,7 +79,7 @@ func newDBConfDetails(p, env string) (*DBConf, error) {
 	}
 
 	return &DBConf{
-		MigrationsDir: filepath.Join(p, "migrations"),
+		MigrationsDir: migrationsDir,
 		Env:           env,
 		Driver:        d,
 	}, nil

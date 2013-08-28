@@ -7,7 +7,7 @@ import (
 
 func TestBasics(t *testing.T) {
 
-	dbconf, err := newDBConfDetails("db-sample", "test")
+	dbconf, err := newDBConfDetails("db-sample/dbconf.yml", "db-sample/migrations", "test")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -24,7 +24,7 @@ func TestBasics(t *testing.T) {
 
 func TestImportOverride(t *testing.T) {
 
-	dbconf, err := newDBConfDetails("db-sample", "customimport")
+	dbconf, err := newDBConfDetails("db-sample/dbconf.yml", "db-sample/migrations", "customimport")
 	if err != nil {
 		t.Fatal(err)
 	}
