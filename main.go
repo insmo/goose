@@ -56,9 +56,9 @@ Usage:
     goose [options] <subcommand> [subcommand options]
 
 Options:
-    cfg		Path to a configuration file (Default: db.yml)
-    path	Path to migrations folder (Default: db)
-    env		DB environment to use (Default: development)
+    cfg        Path to a configuration file (Default: db.yml)
+    path       Path to migrations folder (Default: db)
+    env        DB environment to use (Default: development)
 
 Commands:{{range .}}
     {{.Name | printf "%-10s"}} {{.Summary}}{{end}}
