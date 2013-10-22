@@ -161,6 +161,25 @@ goose expects you to maintain a folder (typically called "db"), which contains t
 
 You may use the `-path` option to specify an alternate location for the folder containing your config and migrations.
 
+In cases when your migrations and configurations are stored in the separate locations (i.e. migrations are checked out from the
+repository and configuration file is generated during the deployment) you are able to specify this using `-path` and `-conf`
+options. Examples of different cases are provided below:
+
+    // By default goose will try to open /path/to/app/db/dbconf.yml and will use
+    // /path/to/app/migrations for migrations
+    $ goose -path=/path/to/app/db status
+
+    // In this case goose will try to open /path/to/app/db/db.yml (looks relatively to `path`)
+    $ goose -path=/path/to/app/db -conf=db.yml status
+
+    // Here goose will try to open /path/to/etc/db.yml and will use
+    // /path/to/app/db/migrations for migrations
+    $ goose -path=/path/to/app/db -conf=/path/to/etc/db.yml status
+
+    // And here goose will try to open mydb.yml using specified path relatively to the current working directory
+    $ goose -path=/path/to/app/db -conf=../../relative/mydb.yml status
+
+
 A sample dbconf.yml looks like
 
     development:

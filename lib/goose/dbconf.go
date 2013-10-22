@@ -25,6 +25,14 @@ type DBConf struct {
 }
 
 func NewDBConf(conf, p, env string) (*DBConf, error) {
+	if !filepath.IsAbs(conf) {
+		dir, file := filepath.Split(conf)
+		if dir == "" {
+			// Path is neither relative nor absolute (just filename)
+			conf = filepath.Join(p, file)
+		}
+	}
+
 	f, err := yaml.ReadFile(conf)
 	if err != nil {
 		return nil, err
