@@ -7,7 +7,7 @@ import (
 
 func TestBasics(t *testing.T) {
 
-	dbconf, err := NewDBConf("../../db-sample/dbconf.yml", "../../db-sample/migrations", "test")
+	dbconf, err := NewDBConf("../../db-sample/dbconf.yml", "../../db-sample", "test")
 	if err != nil {
 		t.Fatal(err)
 	}

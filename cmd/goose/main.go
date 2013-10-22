@@ -11,7 +11,7 @@ import (
 
 // global options. available to any subcommands.
 var flagConf = flag.String("conf", "db/dbconf.yml", "path to db configuration file")
-var flagPath = flag.String("path", "db", "folder containing db migrations")
+var flagPath = flag.String("path", "db", "folder containing db migrations and by default configuration file")
 var flagEnv = flag.String("env", "development", "which DB environment to use")
 
 // helper to create a DBConf from the given flags

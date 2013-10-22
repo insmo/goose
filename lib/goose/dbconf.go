@@ -6,6 +6,7 @@ import (
 	"github.com/kylelemons/go-gypsy/yaml"
 	"github.com/lib/pq"
 	"os"
+	"path/filepath"
 )
 
 // DBDriver encapsulates the info needed to work with
@@ -66,7 +67,7 @@ func NewDBConf(conf, p, env string) (*DBConf, error) {
 	}
 
 	return &DBConf{
-		MigrationsDir: p,
+		MigrationsDir: filepath.Join(p, "migrations"),
 		Env:           env,
 		Driver:        d,
 	}, nil
