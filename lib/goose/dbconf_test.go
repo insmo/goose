@@ -1,4 +1,4 @@
-package main
+package goose
 
 import (
 	// "fmt"
@@ -7,13 +7,13 @@ import (
 
 func TestBasics(t *testing.T) {
 
-	dbconf, err := newDBConfDetails("db-sample/dbconf.yml", "db-sample/migrations", "test")
+	dbconf, err := NewDBConf("../../db-sample/dbconf.yml", "../../db-sample/migrations", "test")
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	got := []string{dbconf.MigrationsDir, dbconf.Env, dbconf.Driver.Name, dbconf.Driver.OpenStr}
-	want := []string{"db-sample/migrations", "test", "postgres", "user=liam dbname=tester sslmode=disable"}
+	want := []string{"../../db-sample/migrations", "test", "postgres", "user=liam dbname=tester sslmode=disable"}
 
 	for i, s := range got {
 		if s != want[i] {
@@ -24,7 +24,8 @@ func TestBasics(t *testing.T) {
 
 func TestImportOverride(t *testing.T) {
 
-	dbconf, err := newDBConfDetails("db-sample/dbconf.yml", "db-sample/migrations", "customimport")
+	dbconf, err := NewDBConf("../../db-sample/dbconf.yml", "../../db-sample", "customimport")
+
 	if err != nil {
 		t.Fatal(err)
 	}

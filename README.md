@@ -4,11 +4,17 @@ goose is a database migration tool.
 
 You can manage your database's evolution by creating incremental SQL or Go scripts.
 
+[![Build Status](https://drone.io/bitbucket.org/liamstask/goose/status.png)](https://drone.io/bitbucket.org/liamstask/goose/latest)
+
 # Install
 
-    $ go get bitbucket.org/liamstask/goose
+    $ go get bitbucket.org/liamstask/goose/cmd/goose
 
 This will install the `goose` binary to your `$GOPATH/bin` directory.
+
+You can also build goose into your own applications by importing `bitbucket.org/liamstask/goose/lib/goose`. Documentation is available at [godoc.org](http://godoc.org/bitbucket.org/liamstask/goose/lib/goose).
+
+NOTE: the API is still new, and may undergo some changes.
 
 # Usage
 
@@ -90,6 +96,34 @@ A sample SQL migration looks like:
 
 Notice the annotations in the comments. Any statements following `-- +goose Up` will be executed as part of a forward migration, and any statements following `-- +goose Down` will be executed as part of a rollback.
 
+By default, SQL statements are delimited by semicolons - in fact, query statements must end with a semicolon to be properly recognized by goose.
+
+More complex statements (PL/pgSQL) that have semicolons within them must be annotated with `-- +goose StatementBegin` and `-- +goose StatementEnd` to be properly recognized. For example:
+
+    :::sql
+    -- +goose Up
+    -- +goose StatementBegin
+    CREATE OR REPLACE FUNCTION histories_partition_creation( DATE, DATE )
+    returns void AS $$
+    DECLARE
+      create_query text;
+    BEGIN
+      FOR create_query IN SELECT
+          'CREATE TABLE IF NOT EXISTS histories_'
+          || TO_CHAR( d, 'YYYY_MM' )
+          || ' ( CHECK( created_at >= timestamp '''
+          || TO_CHAR( d, 'YYYY-MM-DD 00:00:00' )
+          || ''' AND created_at < timestamp '''
+          || TO_CHAR( d + INTERVAL '1 month', 'YYYY-MM-DD 00:00:00' )
+          || ''' ) ) inherits ( histories );'
+        FROM generate_series( $1, $2, '1 month' ) AS d
+      LOOP
+        EXECUTE create_query;
+      END LOOP;  -- LOOP END
+    END;         -- FUNCTION END
+    $$
+    language plpgsql;
+    -- +goose StatementEnd
 
 ## Go Migrations
 
@@ -162,7 +196,7 @@ These instructions assume that you're using [Keith Rarick's Heroku Go buildpack]
     // +build heroku
     package main
 
-    import _ "bitbucket.org/liamstask/goose"
+    import _ "bitbucket.org/liamstask/goose/cmd/goose"
 
 [Set up your Heroku database(s) as usual.](https://devcenter.heroku.com/articles/heroku-postgresql)
 
@@ -186,3 +220,7 @@ Thank you!
 * Chris Baynes (chris_baynes)
 * Michael Gerow (gerow)
 * Vytautas Šaltenis (rtfb)
+* James Cooper (coopernurse)
+* Gyepi Sam (gyepisam)
+* Matt Sherman (clipperhouse)
+* runner_mei

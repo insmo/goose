@@ -1,4 +1,4 @@
-package main
+package goose
 
 import (
 	"fmt"
@@ -10,7 +10,7 @@ import (
 	"text/template"
 )
 
-type TemplateData struct {
+type templateData struct {
 	Version    int64
 	Driver     DBDriver
 	Direction  bool
@@ -39,14 +39,14 @@ func runGoMigration(conf *DBConf, path string, version int64, direction bool) er
 		directionStr = "Up"
 	}
 
-	td := &TemplateData{
+	td := &templateData{
 		Version:    version,
 		Driver:     conf.Driver,
 		Direction:  direction,
 		Func:       fmt.Sprintf("%v_%v", directionStr, version),
 		InsertStmt: conf.Driver.Dialect.insertVersionSql(),
 	}
-	main, e := writeTemplateToFile(filepath.Join(d, "goose_main.go"), goMigrationTmpl, td)
+	main, e := writeTemplateToFile(filepath.Join(d, "goose_main.go"), goMigrationDriverTemplate, td)
 	if e != nil {
 		log.Fatal(e)
 	}
@@ -71,7 +71,7 @@ func runGoMigration(conf *DBConf, path string, version int64, direction bool) er
 // this gets linked against the substituted versions of the user-supplied
 // scripts in order to execute a migration via `go run`
 //
-var goMigrationTmpl = template.Must(template.New("driver").Parse(`
+var goMigrationDriverTemplate = template.Must(template.New("goose.go-driver").Parse(`
 package main
 
 import (
@@ -96,7 +96,7 @@ func main() {
 
 	// XXX: drop goose_db_version table on some minimum version number?
 	stmt := "{{ .InsertStmt }}"
-	if _, err = txn.Exec(stmt, {{ .Version }}, {{ .Direction }}); err != nil {
+	if _, err = txn.Exec(stmt, int64({{ .Version }}), {{ .Direction }}); err != nil {
 		txn.Rollback()
 		log.Fatal("failed to write version: ", err)
 	}

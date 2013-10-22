@@ -1,18 +1,12 @@
-package main
+package goose
 
 import (
 	"errors"
-	"flag"
 	"fmt"
 	"github.com/kylelemons/go-gypsy/yaml"
 	"github.com/lib/pq"
 	"os"
 )
-
-// global options. available to any subcommands.
-var dbConfPath = flag.String("cfg", "db.yml", "path to a db configuration file")
-var dbMigrationsPath = flag.String("path", "db", "folder containing the migrations")
-var dbEnv = flag.String("env", "development", "which DB environment to use")
 
 // DBDriver encapsulates the info needed to work with
 // a specific database driver
@@ -29,15 +23,8 @@ type DBConf struct {
 	Driver        DBDriver
 }
 
-// default helper - makes a DBConf from the dbPath and dbEnv flags
-func NewDBConf() (*DBConf, error) {
-	return newDBConfDetails(*dbConfPath, *dbMigrationsPath, *dbEnv)
-}
-
-// extract configuration details from the given file
-func newDBConfDetails(cfgFile, migrationsDir, env string) (*DBConf, error) {
-
-	f, err := yaml.ReadFile(cfgFile)
+func NewDBConf(conf, p, env string) (*DBConf, error) {
+	f, err := yaml.ReadFile(conf)
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +49,7 @@ func newDBConfDetails(cfgFile, migrationsDir, env string) (*DBConf, error) {
 		}
 	}
 
-	d := NewDBDriver(drv, open)
+	d := newDBDriver(drv, open)
 
 	// allow the configuration to override the Import for this driver
 	if imprt, err := f.Get(fmt.Sprintf("%s.import", env)); err == nil {
@@ -71,7 +58,7 @@ func newDBConfDetails(cfgFile, migrationsDir, env string) (*DBConf, error) {
 
 	// allow the configuration to override the Dialect for this driver
 	if dialect, err := f.Get(fmt.Sprintf("%s.dialect", env)); err == nil {
-		d.Dialect = DialectByName(dialect)
+		d.Dialect = dialectByName(dialect)
 	}
 
 	if !d.IsValid() {
@@ -79,7 +66,7 @@ func newDBConfDetails(cfgFile, migrationsDir, env string) (*DBConf, error) {
 	}
 
 	return &DBConf{
-		MigrationsDir: migrationsDir,
+		MigrationsDir: p,
 		Env:           env,
 		Driver:        d,
 	}, nil
@@ -88,7 +75,7 @@ func newDBConfDetails(cfgFile, migrationsDir, env string) (*DBConf, error) {
 // Create a new DBDriver and populate driver specific
 // fields for drivers that we know about.
 // Further customization may be done in NewDBConf
-func NewDBDriver(name, open string) DBDriver {
+func newDBDriver(name, open string) DBDriver {
 
 	d := DBDriver{
 		Name:    name,
