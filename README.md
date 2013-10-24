@@ -166,7 +166,7 @@ repository and configuration file is generated during the deployment) you are ab
 options. Examples of different cases are provided below:
 
     // By default goose will try to open /path/to/app/db/dbconf.yml and will use
-    // /path/to/app/migrations for migrations
+    // /path/to/app/db/migrations for migrations
     $ goose -path=/path/to/app/db status
 
     // In this case goose will try to open /path/to/app/db/db.yml (looks relatively to `path`)
