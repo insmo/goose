@@ -17,6 +17,7 @@ import (
 )
 
 var (
+	ErrNotDirectory      = errors.New("path is not a directory")
 	ErrTableDoesNotExist = errors.New("table does not exist")
 	ErrNoPreviousVersion = errors.New("no previous version found")
 )
@@ -315,6 +316,15 @@ func GetPreviousDBVersion(dirpath string, version int64) (previous int64, err er
 func GetMostRecentDBVersion(dirpath string) (version int64, err error) {
 
 	version = -1
+
+	// check if migrationsDir exists and is a directory
+	fi, err := os.Stat(dirpath)
+	if err != nil {
+		return version, err
+	}
+	if !fi.Mode().IsDir() {
+		return version, ErrNotDirectory
+	}
 
 	filepath.Walk(dirpath, func(name string, info os.FileInfo, walkerr error) error {
 
