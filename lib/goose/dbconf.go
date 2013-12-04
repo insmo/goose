@@ -95,9 +95,11 @@ func newDBDriver(name, open string) DBDriver {
 	case "postgres":
 		d.Import = "github.com/lib/pq"
 		d.Dialect = &PostgresDialect{}
-
 	case "mymysql":
 		d.Import = "github.com/ziutek/mymysql/godrv"
+		d.Dialect = &MySqlDialect{}
+	case "go-mysql-driver":
+		d.Import = "github.com/go-sql-driver/mysql"
 		d.Dialect = &MySqlDialect{}
 	}
 
