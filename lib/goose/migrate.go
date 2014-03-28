@@ -7,6 +7,7 @@ import (
 	_ "github.com/lib/pq"
 	_ "github.com/ziutek/mymysql/godrv"
 	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/mattn/go-sqlite3"
 	"log"
 	"os"
 	"path/filepath"

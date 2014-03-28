@@ -29,6 +29,11 @@ Create a new migration script.
 
 Edit the newly created script to define the behavior of your migration.
 
+You can also create an SQL migration:
+
+    $ goose create AddSomeColumns sql
+    $ goose: created db/migrations/20130106093224_AddSomeColumns.sql
+
 ## up
 
 Apply all available migrations.
@@ -68,6 +73,13 @@ Print the status of all migrations:
     $   Sun Jan  6 11:25:03 2013 -- 001_basics.sql
     $   Sun Jan  6 11:25:03 2013 -- 002_next.sql
     $   Pending                  -- 003_and_again.go
+
+## dbversion
+
+Print the current version of the database:
+
+    $ goose dbversion
+    $ goose: dbversion 002
 
 
 `goose -h` provides more detailed info on each command.
@@ -147,7 +159,7 @@ A sample Go migration looks like:
 
 `Up_20130106222315()` will be executed as part of a forward migration, and `Down_20130106222315()` will be executed as part of a rollback.
 
-The numeric portion of the function name (20130106222315) must be the leading portion of migration's filename, such as `20130106222315_descriptive_name.go`. `goose create` does this by default.
+The numeric portion of the function name (`20130106222315`) must be the leading portion of migration's filename, such as `20130106222315_descriptive_name.go`. `goose create` does this by default.
 
 A transaction is provided, rather than the DB instance directly, since goose also needs to record the schema version within the same transaction. Each migration should run as a single transaction to ensure DB integrity, so it's good practice anyway.
 
@@ -156,8 +168,8 @@ A transaction is provided, rather than the DB instance directly, since goose als
 
 goose expects you to maintain a folder (typically called "db"), which contains the following:
 
-* a dbconf.yml file that describes the database configurations you'd like to use
-* a folder called "migrations" which contains .sql and/or .go scripts that implement your migrations
+* a `dbconf.yml` file that describes the database configurations you'd like to use
+* a folder called "migrations" which contains `.sql` and/or `.go` scripts that implement your migrations
 
 You may use the `-path` option to specify an alternate location for the folder containing your config and migrations.
 
@@ -193,9 +205,9 @@ You may include as many environments as you like, and you can use the `-env` com
 goose will expand environment variables in the `open` element. For an example, see the Heroku section below.
 
 ## Other Drivers
-goose knows about some common SQL drivers, but it can still be used to run Go-based migrations with any driver supported by database/sql. An import path and known dialect are required.
+goose knows about some common SQL drivers, but it can still be used to run Go-based migrations with any driver supported by `database/sql`. An import path and known dialect are required.
 
-Currently, available dialects are: "postgres" or "mysql"
+Currently, available dialects are: "postgres", "mysql", or "sqlite3"
 
 To run Go-based migrations with another driver, specify its import path and dialect, as shown below.
 
@@ -213,6 +225,8 @@ These instructions assume that you're using [Keith Rarick's Heroku Go buildpack]
 
     // use build constraints to work around http://code.google.com/p/go/issues/detail?id=4210
     // +build heroku
+
+    // note: need at least one blank line after build constraint
     package main
 
     import _ "github.com/simonz05/goose/cmd/goose"
@@ -243,3 +257,5 @@ Thank you!
 * Gyepi Sam (gyepisam)
 * Matt Sherman (clipperhouse)
 * runner_mei
+* John Luebs (jkl1337)
+* Luke Hutton (lukehutton)
