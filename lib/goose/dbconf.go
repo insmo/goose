@@ -3,10 +3,11 @@ package goose
 import (
 	"errors"
 	"fmt"
-	"github.com/kylelemons/go-gypsy/yaml"
-	"github.com/lib/pq"
 	"os"
 	"path/filepath"
+
+	"github.com/kylelemons/go-gypsy/yaml"
+	"github.com/lib/pq"
 )
 
 // DBDriver encapsulates the info needed to work with
@@ -98,7 +99,7 @@ func newDBDriver(name, open string) DBDriver {
 	case "mymysql":
 		d.Import = "github.com/ziutek/mymysql/godrv"
 		d.Dialect = &MySqlDialect{}
-	case "go-mysql-driver":
+	case "mysql":
 		d.Import = "github.com/go-sql-driver/mysql"
 		d.Dialect = &MySqlDialect{}
 	case "sqlite3":
